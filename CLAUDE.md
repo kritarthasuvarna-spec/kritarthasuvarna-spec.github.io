@@ -4,10 +4,9 @@ Owner: Viskit (Kritarth K. Suvarna), 3D generalist + technical artist. Prefers t
 This site = 3D work only. UI/UX stays on Behance (behance.net/kritarthsuvarna1).
 
 ## Hosting
-- GitHub repo: `kritarthasuvarna-spec/kritarthsuvarna.github.io`, branch `main`, GitHub Pages from root.
+- GitHub repo: `kritarthasuvarna-spec/kritarthasuvarna-spec.github.io`, branch `main`, GitHub Pages from root.
 - `.nojekyll` present (serve files as-is).
-- Repo name does not match username, so the URL is `https://kritarthasuvarna-spec.github.io/kritarthsuvarna.github.io/`.
-  Renaming the repo to `kritarthasuvarna-spec.github.io` gives the clean root URL. All asset paths are relative, so either works.
+- Live URL: https://kritarthasuvarna-spec.github.io/ (repo renamed Nov 2026 for the clean root URL). All asset paths are relative.
 - Static site, no build step. Edit `index.html`, commit, push. Pages redeploys in about a minute.
 
 ## Standing workflow: every content update
@@ -91,5 +90,4 @@ When Viskit says "add/upload/update X":
 
 ## Pending / ideas
 - Shipped games section, to sit after Experience. Viskit will provide the game names, store links, his role on each, and screenshots.
-- Optional: rename the repo to get the clean URL.
 - Optional: custom domain.

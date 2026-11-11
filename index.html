@@ -118,7 +118,8 @@ nav a:hover::after,nav a[aria-current="true"]::after{transform:none}
 .modes button{min-height:44px;padding:0 16px;font:600 14px/1 var(--body);border:1.5px solid rgba(251,248,242,.3);background:transparent;color:var(--paper);cursor:pointer}
 .modes button[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:var(--ink)}
 .ribbon{display:block;width:100%;height:110px;margin-top:56px}
-@media (max-width:900px){.hero-copy,.hero-vp{grid-column:1/-1}.vp{aspect-ratio:4/3}}
+@media (max-width:900px){.hero-copy,.hero-vp{grid-column:1/-1}.vp{aspect-ratio:5/4}}
+@media (max-width:560px){.hero-vp{margin-inline:-20px}.vp{aspect-ratio:4/5;--c:28px}.vp-name{left:36px;top:12px;font-size:12px;padding:6px 8px}.vp-ui{padding:10px;gap:8px;justify-content:center}.vp-ui span{display:none}.modes{width:100%;gap:4px}.modes button{flex:1;min-height:40px;padding:0 6px;font-size:13px}}
 
 /* ABOUT (statement) */
 .about{padding-block:clamp(80px,10vw,140px)}

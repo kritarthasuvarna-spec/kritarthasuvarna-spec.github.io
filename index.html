@@ -1,0 +1,906 @@
+<title>Kritarth Suvarna 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Kritarth Suvarna, 3D generalist and technical artist. Stylized game art, characters, environments, rigging and Unity integration.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Figtree:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Concept: UV islands. Big sections are islands with ONE cut corner (top-left). Only islands and the primary button carry that cut.
+   Color by chapter: paper ground, mint = about, navy = rigging + finale, lilac = experience. Orange is the only accent.
+   Type: Dela Gothic for section headlines only; Figtree for everything else; mono only inside the 3D viewport. */
+:root{
+  --ground:#FFFBF3; --paper:#FFFBF3; --card:#EDEEE1;
+  --ink:#1F2C24; --muted:#4B564F; --line:rgba(31,44,36,.14);
+  --orange:#FF8702; --orange-ink:#B95B43; --mint:#60753F; --lilac:#F2B443; --sun:#F2B443; --navy:#1F2C24; --rust:#B95B43;
+  --display:"Dela Gothic One","Arial Black",Impact,sans-serif;
+  --body:Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --cut:48px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+::selection{background:var(--orange);color:var(--paper)}
+body{background:var(--ground);color:var(--ink);font:400 17px/1.6 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--ground)}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--orange);outline-offset:3px;border-radius:2px}
+.wrap{max-width:1280px;margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.g12{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:32px}
+@media (max-width:1100px){.g12{gap:24px}}
+@media (max-width:900px){.g12{grid-template-columns:minmax(0,1fr);gap:28px}.g12>*{grid-column:1/-1!important}}
+html,body{overflow-x:clip}img,video,svg,canvas{max-width:100%}
+
+/* type scale: 76-120 / 48-72 / 28 / 20 / 17 / 13 */
+.h1,.h2{font-family:var(--display);font-weight:400;text-transform:uppercase;letter-spacing:-.01em;line-height:.92;margin:0;text-wrap:balance}
+.h1{font-size:clamp(44px,6vw,84px)}
+.hero-copy{position:relative;z-index:2}
+.h2{font-size:clamp(40px,5.2vw,74px)}
+.h3{font:700 22px/1.2 var(--body);margin:0}
+.lead{font-size:clamp(18px,1.5vw,21px);line-height:1.55;margin:0;max-width:46ch}
+.label{display:inline-block;font:800 13px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;margin-bottom:20px}
+.muted{color:var(--muted)}
+
+/* island: the one shape rule */
+.island{position:relative;margin-inline:max(16px,env(safe-area-inset-left,0px));clip-path:polygon(var(--cut) 0,100% 0,100% 100%,0 100%,0 var(--cut))}
+@media (max-width:700px){:root{--cut:28px}}
+.mint{background:var(--mint);color:var(--paper)}.lilac{background:var(--lilac)}.navy{background:var(--navy);color:var(--paper)}
+
+/* buttons */
+.btn{--c:12px;position:relative;display:inline-flex;align-items:center;gap:12px;min-height:52px;font:700 16px/1 var(--body);text-decoration:none;padding:0 26px;border:0;cursor:pointer;color:var(--ink);background:var(--orange);clip-path:polygon(var(--c) 0,100% 0,100% 100%,0 100%,0 var(--c));overflow:hidden;isolation:isolate;transition:color .3s}
+.btn::before{content:"";position:absolute;inset:0;background:var(--ink);transform:translateY(101%);transition:transform .35s cubic-bezier(.7,0,.2,1);z-index:-1}
+.btn:hover{color:var(--paper)}
+.btn:hover::before{transform:none}
+.btn svg{width:18px;height:18px;transition:transform .35s}
+.btn:hover svg{transform:translateX(4px)}
+.navy .btn::before{background:var(--paper)}
+.navy .btn:hover{color:var(--ink)}
+.link{display:inline-flex;align-items:center;min-height:52px;font:700 16px/1 var(--body);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:var(--orange)}
+.link:hover{color:var(--orange-ink)}
+@media (prefers-reduced-motion:reduce){.btn::before,.btn svg{transition:none}}
+
+/* header */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:color-mix(in srgb,var(--ground) 92%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:72px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;font:800 18px/1 var(--body)}
+.logo svg{width:32px;height:32px}
+nav ul{display:flex;gap:4px;list-style:none;margin:0;padding:0}
+nav a{display:flex;align-items:center;min-height:44px;padding:0 14px;text-decoration:none;font:600 15px/1 var(--body);position:relative;color:var(--muted)}
+nav a::after{content:"";position:absolute;left:14px;right:14px;bottom:6px;height:2px;background:var(--orange);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+nav a:hover,nav a[aria-current="true"]{color:var(--ink)}
+nav a:hover::after,nav a[aria-current="true"]::after{transform:none}
+.head-cta{min-height:44px;padding:0 20px;font-size:15px}
+.menu-btn{display:none;min-height:44px;min-width:44px;padding:0 14px;border:2px solid var(--ink);background:transparent;font:700 15px/1 var(--body);color:var(--ink);cursor:pointer}
+.sheet{position:fixed;inset:0;z-index:70;background:var(--navy);color:var(--paper);padding:calc(env(safe-area-inset-top,0px) + 20px) max(20px,env(safe-area-inset-right,0px)) 32px max(20px,env(safe-area-inset-left,0px));display:flex;flex-direction:column}
+.sheet .close{align-self:flex-end;min-height:44px;padding:0 16px;border:2px solid var(--paper);background:transparent;color:var(--paper);font:700 15px/1 var(--body);cursor:pointer}
+.sheet ul{list-style:none;margin:40px 0 0;padding:0;display:grid;gap:6px}
+.sheet a{display:block;font:400 44px/1.1 var(--display);text-transform:uppercase;text-decoration:none;padding:8px 0}
+.sheet a:hover{color:var(--orange)}
+@media (max-width:860px){nav,.head-cta{display:none}.menu-btn{display:inline-flex;align-items:center}}
+
+/* reveal: content is visible at rest; it only rises in when scrolled into view */
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.rv.in{animation:rise .7s cubic-bezier(.2,.7,.2,1) both}
+@media (prefers-reduced-motion:reduce){.rv.in{animation:none}}
+
+/* HERO */
+.hero{padding-block:clamp(40px,6vw,88px) 0;overflow:hidden}
+.hero .g12{align-items:center}
+.hero-copy{grid-column:1/7;display:grid;gap:28px;min-width:0}
+.hero-copy .h1 span{color:var(--orange)}
+.hero-copy .lead b{font-weight:700}
+.hero-cta{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.hero-vp{grid-column:7/13;min-width:0}
+.vp{position:relative;aspect-ratio:1/1;max-width:100%;background:radial-gradient(circle at 50% 42%,#3a4a3f,#1F2C24 70%);--c:40px;clip-path:polygon(var(--c) 0,100% 0,100% 100%,0 100%,0 var(--c))}
+.vp-fallback{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#3a3a3a}
+.vp-name{position:absolute;left:52px;top:16px;font:700 13px/1 var(--body);color:var(--paper);background:rgba(0,0,0,.25);padding:8px 10px}
+.vp canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:none}
+.vp canvas:active{cursor:grabbing}
+.vp-ui{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;flex-wrap:wrap}
+.vp-ui span{font:500 12px/1 var(--mono);color:rgba(251,248,242,.7)}
+.modes{display:flex;gap:6px}
+.modes button{min-height:44px;padding:0 16px;font:600 14px/1 var(--body);border:1.5px solid rgba(251,248,242,.3);background:transparent;color:var(--paper);cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--orange);border-color:var(--orange);color:var(--ink)}
+.ribbon{display:block;width:100%;height:110px;margin-top:56px}
+@media (max-width:900px){.hero-copy,.hero-vp{grid-column:1/-1}.vp{aspect-ratio:4/3}}
+
+/* ABOUT (statement) */
+.about{padding-block:clamp(80px,10vw,140px)}
+.about .stmt{grid-column:1/10;font:600 clamp(28px,3.4vw,46px)/1.2 var(--body);letter-spacing:-.01em;margin:0;text-wrap:balance}
+.about .stmt em{font-style:normal;background:var(--orange);color:var(--ink);padding:.02em .18em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+.facts{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-top:64px;border-top:2px solid var(--ink)}
+.facts div{padding:22px 24px 0 0;min-width:0}
+.facts div+div{padding-left:24px;border-left:1px solid rgba(31,44,36,.22)}
+.facts strong{display:block;font:800 26px/1.15 var(--body)}
+.facts span{font-size:15px}
+@media (max-width:900px){.about .stmt{grid-column:1/-1}.facts{grid-template-columns:repeat(2,minmax(0,1fr))}.facts div:nth-child(3){padding-left:0;border-left:0}.facts div:nth-child(n+3){margin-top:16px}}
+@media (max-width:520px){.facts{grid-template-columns:1fr}.facts div+div{padding-left:0;border-left:0;margin-top:16px}}
+
+/* WORK */
+.work{padding-block:clamp(90px,11vw,150px)}
+.work-head{display:flex;justify-content:space-between;align-items:end;gap:28px;flex-wrap:wrap;margin-bottom:44px}
+.work-head p{margin-top:16px}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters button{min-height:44px;padding:0 18px;font:600 15px/1 var(--body);border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;transition:border-color .2s}
+.filters button:hover{border-color:var(--ink)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.filters small{font-weight:500;opacity:.6;margin-left:6px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:40px 28px}
+.tile{display:grid;gap:14px;text-decoration:none;min-width:0}
+.tile.feature{grid-column:span 2}
+.frame{position:relative;aspect-ratio:4/3;max-width:100%;background:var(--card);overflow:hidden}
+.tile.feature .frame{aspect-ratio:auto;height:100%;min-height:0}
+.frame svg.ph{position:absolute;inset:0;width:100%;height:100%;transition:transform .6s ease}
+.frame .wire{position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity .35s;pointer-events:none}
+.frame .view{position:absolute;right:14px;bottom:14px;display:inline-flex;align-items:center;gap:8px;font:700 14px/1 var(--body);background:var(--paper);color:var(--ink);padding:11px 14px;transform:translateY(8px);opacity:0;transition:opacity .3s,transform .3s}
+.frame .badge{position:absolute;top:14px;left:14px;font:800 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;background:var(--sun);color:var(--ink);padding:8px 10px}
+.tile:hover .frame svg.ph,.tile:focus-visible .frame svg.ph{transform:scale(1.04)}
+.tile:hover .wire,.tile:focus-visible .wire{opacity:1}
+.tile:hover .view,.tile:focus-visible .view{opacity:1;transform:none}
+@media (hover:none){.frame .view{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.frame svg.ph,.frame .wire,.frame .view{transition:none}}
+.tile .meta{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.tile .h3{font-size:20px}
+.tile .cat{font-size:14px;color:var(--muted);white-space:nowrap}
+@media (max-width:900px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tile.feature .frame{aspect-ratio:16/10;height:auto}}
+@media (max-width:560px){.grid{grid-template-columns:1fr}.tile.feature{grid-column:auto}}
+
+/* RIGGING */
+.rig{padding-block:clamp(90px,11vw,150px)}
+.rig .media{grid-column:1/8;min-width:0}
+.rig .txt{grid-column:9/13;min-width:0;align-self:center}
+.rig .txt .lead{margin:24px 0 30px;color:rgba(251,248,242,.85)}
+.rig .frame{background:#2B3B31}
+.minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
+.minis figure{margin:0;display:grid;gap:10px}
+.minis .frame{aspect-ratio:1}
+.minis figcaption{font-size:14px;color:rgba(251,248,242,.75)}
+.feat-list{list-style:none;margin:0 0 34px;padding:0;border-top:1px solid rgba(251,248,242,.22)}
+.feat-list li{padding:14px 0;border-bottom:1px solid rgba(251,248,242,.22)}
+@media (max-width:900px){.rig .media,.rig .txt{grid-column:1/-1}}
+
+/* SERVICES */
+.svc{padding-block:clamp(90px,11vw,150px)}
+.svc .intro{grid-column:1/5}
+.svc .intro .lead{margin-top:20px}
+.svc ol{grid-column:6/13;list-style:none;margin:0;padding:0;counter-reset:s}
+.svc li{display:grid;grid-template-columns:64px minmax(0,1fr);gap:20px;padding:24px 0;border-bottom:1px solid var(--line);counter-increment:s}
+.svc li:first-child{border-top:2px solid var(--ink)}
+.svc li::before{content:counter(s,decimal-leading-zero);font:800 18px/1.4 var(--body);color:var(--orange-ink)}
+.svc li p{margin:6px 0 0}
+@media (max-width:900px){.svc .intro,.svc ol{grid-column:1/-1}}
+
+/* EXPERIENCE */
+.exp{padding-block:clamp(90px,11vw,140px)}
+.exp .intro{grid-column:1/5}
+.exp .jobs{grid-column:6/13}
+.jobs div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 20px;padding:20px 0;border-bottom:1px solid rgba(31,44,36,.22)}
+.jobs div:first-child{border-top:2px solid var(--ink)}
+.jobs time{font:700 15px/1.5 var(--body);font-variant-numeric:tabular-nums}
+.jobs p{grid-column:1/-1;margin:0;font-size:16px}
+@media (max-width:900px){.exp .intro,.exp .jobs{grid-column:1/-1}}
+
+/* TOOLS */
+.tools{padding-block:clamp(90px,11vw,140px) 0}
+.tools-head{display:flex;justify-content:space-between;align-items:end;gap:24px;flex-wrap:wrap;margin-bottom:40px}
+.tools-head .lead{max-width:40ch}
+.tgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.tcard{display:grid;grid-template-rows:auto auto 1fr auto;gap:14px;padding:28px;background:var(--card);min-width:0;text-decoration:none;transition:transform .3s}
+.tcard:hover{transform:translateY(-4px)}
+.tcard.hero-tool{grid-column:1/-1;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-rows:auto;align-items:center;gap:40px;padding:40px;background:var(--navy);color:var(--paper);--c:36px;clip-path:polygon(var(--c) 0,100% 0,100% 100%,0 100%,0 var(--c))}
+.tcard.hero-tool:hover{transform:none}
+.ticon{width:56px;height:56px}
+.tname{display:flex;align-items:center;gap:12px}
+.tname img{border-radius:10px;flex:0 0 auto}
+.tbtns{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.hero-tool .link{color:var(--paper);background:none;border:0;cursor:pointer;padding:0}
+.tshot video{width:100%;height:100%;object-fit:cover;display:block}
+.tplug{padding:0 0 26px;grid-template-rows:auto auto auto 1fr auto}
+.tplug>*:not(.tcover){margin-inline:26px}
+.tcover{position:relative;display:block;padding:0;border:0;background:#222;cursor:pointer;aspect-ratio:2/1;overflow:hidden}
+.tcover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.tcover .view{position:absolute;right:12px;bottom:12px;font:700 14px/1 var(--body);background:var(--paper);color:var(--ink);padding:10px 12px;opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s}
+.tcover:hover img{transform:scale(1.04)}
+.tcover:hover .view,.tcover:focus-visible .view{opacity:1;transform:none}
+@media (hover:none){.tcover .view{opacity:1;transform:none}}
+.tstat{display:inline-flex;align-items:center;gap:8px;font:800 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;justify-self:start}
+.tstat::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--olive,#60753F)}
+.tstat.live::before{background:var(--orange)}
+.tcard p{margin:0}
+.tcard .muted{color:var(--muted)}
+.hero-tool .lead{color:rgba(255,251,243,.85);margin:16px 0 26px}
+.hero-tool ul{list-style:none;margin:0 0 28px;padding:0;display:grid;gap:8px}
+.hero-tool li{padding-left:22px;position:relative}
+.hero-tool li::before{content:"";position:absolute;left:0;top:.55em;width:10px;height:10px;background:var(--orange);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.tshot{position:relative;aspect-ratio:16/9;max-width:100%;background:#2B3B31;overflow:hidden}
+.tshot svg{width:88%;height:auto}
+.plink{display:inline-flex;align-items:center;gap:8px;min-height:44px;font:700 15px/1 var(--body);color:var(--ink);text-decoration:underline;text-decoration-color:var(--orange);text-decoration-thickness:2px;text-underline-offset:5px;justify-self:start}
+.plink svg{width:15px;height:15px;transition:transform .25s}
+.plink:hover{color:var(--orange-ink)}
+.plink:hover svg{transform:translate(2px,-2px)}
+.tcard .tags{display:flex;gap:8px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.tcard .tags span{border:1px solid var(--line);padding:5px 9px}
+@media (prefers-reduced-motion:reduce){.tcard{transition:none}}
+@media (max-width:900px){.tgrid{grid-template-columns:1fr}.tcard.hero-tool{grid-template-columns:1fr;padding:28px}}
+
+/* DEVLOG */
+.log{padding-block:clamp(90px,11vw,140px)}
+.posts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:40px}
+.post{border-top:2px solid var(--ink);padding-top:20px;display:grid;gap:10px;align-content:start;min-width:0}
+.post .row{display:flex;gap:12px;align-items:center;font-size:14px;color:var(--muted)}
+.post .chip{font:800 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--ink);background:var(--sun);padding:6px 8px}
+.post p{margin:0;color:var(--muted)}
+@media (max-width:900px){.posts{grid-template-columns:1fr}}
+
+/* FINALE */
+.finale{padding-block:clamp(90px,11vw,140px) 28px;margin-bottom:0}
+.finale .l{grid-column:1/7;min-width:0}
+.finale .l .lead{margin:24px 0 0;color:rgba(251,248,242,.85)}
+.finale .h2 span{color:var(--orange)}
+.mail{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:28px}
+.mail code{font:500 16px/1 var(--mono);background:rgba(251,248,242,.08);padding:17px 18px;user-select:all;min-height:52px;display:inline-flex;align-items:center}
+form{grid-column:8/13;display:grid;gap:18px;min-width:0}
+.field{display:grid;gap:8px}
+.field label{font:600 15px/1 var(--body)}
+input,select,textarea{font:500 17px/1.4 var(--body);color:var(--paper);background:rgba(251,248,242,.07);border:0;border-bottom:2px solid rgba(251,248,242,.35);padding:14px 12px;width:100%;border-radius:0;min-height:52px}
+select option{color:var(--ink)}
+textarea{min-height:130px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-bottom-color:var(--orange);background:rgba(251,248,242,.11)}
+.field[data-error] input,.field[data-error] textarea{border-bottom-color:#FF8A80}
+.err{font-size:14px;color:#FFB3A8;min-height:0}
+.status{color:var(--sun);font-size:15px;margin:0}
+.bigname{display:block;margin-top:clamp(80px,10vw,130px);overflow:hidden;margin-inline:calc(-1 * max(20px,env(safe-area-inset-left,0px)))}
+.bigname-track{display:flex;width:max-content;animation:marquee 28s linear infinite}
+.bigname-track span{flex:0 0 auto;padding-right:.5em;font:400 clamp(56px,11vw,160px)/1 var(--display);text-transform:uppercase;letter-spacing:-.02em;color:var(--paper);white-space:nowrap}
+.bigname-track b{font-weight:400;color:var(--orange)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+.bigname:hover .bigname-track{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.bigname-track{animation:none}.bigname-track span+span{display:none}}
+
+/* back to top */
+.totop{position:fixed;right:max(18px,calc(env(safe-area-inset-right,0px) + 18px));bottom:max(18px,calc(env(safe-area-inset-bottom,0px) + 18px));z-index:45;width:52px;height:52px;border:0;border-radius:50%;background:var(--orange);color:var(--ink);display:grid;place-items:center;cursor:pointer;box-shadow:0 10px 24px -10px rgba(31,44,36,.6);opacity:0;transform:translateY(16px);pointer-events:none;transition:opacity .3s,transform .3s,background .2s}
+.totop.show{opacity:1;transform:none;pointer-events:auto}
+.totop:hover{background:var(--sun)}
+.totop svg{width:20px;height:20px}
+@media (prefers-reduced-motion:reduce){.totop{transition:none}}
+
+/* loader */
+.loader{display:none}
+html.is-loading{overflow:hidden}
+html.is-loading .loader,.loader.leaving{display:grid}
+.loader{position:fixed;inset:0;z-index:100;background:var(--navy);color:var(--paper);place-items:center;padding:24px;transition:clip-path .9s cubic-bezier(.76,0,.24,1);clip-path:inset(0 0 0 0)}
+.loader.leaving{clip-path:inset(0 0 100% 0)}
+.ld-box{display:grid;justify-items:center;gap:26px;text-align:center}
+.ld-gem{width:120px;height:120px}
+.ld-gem .e{fill:none;stroke:var(--orange);stroke-width:1.6;stroke-linejoin:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len)}
+.ld-gem .f{stroke:none;opacity:0;transition:opacity .4s}
+.ld-count{font:400 clamp(56px,10vw,104px)/1 var(--display);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ld-count small{font-size:.4em;color:var(--orange)}
+.ld-bar{width:min(320px,70vw);height:3px;background:rgba(255,251,243,.15)}
+.ld-bar i{display:block;height:100%;width:0;background:var(--orange);transition:width .2s}
+.ld-meta{font:600 13px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:rgba(255,251,243,.7)}
+@media (prefers-reduced-motion:reduce){.loader{transition:opacity .3s}.loader.leaving{clip-path:none;opacity:0}}
+.foot{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:28px;padding-top:20px;border-top:1px solid rgba(251,248,242,.2);font-size:15px}
+.foot a{display:inline-flex;align-items:center;min-height:44px;text-decoration:none;color:rgba(251,248,242,.85)}
+.foot a:hover{color:var(--orange)}
+.foot nav{display:flex;gap:20px;flex-wrap:wrap}
+@media (max-width:900px){.finale .l,form{grid-column:1/-1}}
+
+/* real renders inside frames */
+.frame.real{background:#BDBDBD}
+.frame.real img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
+.tile:hover .frame.real img,.tile:focus-visible .frame.real img{transform:scale(1.04)}
+@media (prefers-reduced-motion:reduce){.frame.real img{transition:none}}
+.tile.feature{grid-template-rows:minmax(0,1fr) auto}
+.tile.feature .frame.real{aspect-ratio:auto;height:auto;min-height:300px;background:#3C3C3C}
+.tile.feature .frame.real img{object-fit:contain}
+.lb-img{overflow:hidden}
+.lb-img img{width:auto;height:auto;max-width:100%;max-height:100%;aspect-ratio:auto;background:none;object-fit:contain}
+@media (max-width:900px){.tile.feature .frame.real{aspect-ratio:16/10;min-height:0}}
+
+/* animation showcase */
+.reel{position:relative;aspect-ratio:16/9;max-width:100%;background:#000;overflow:hidden}
+.reel video{width:100%;height:100%;display:block;object-fit:contain;background:#000}
+.reel-play{position:absolute;inset:0;margin:auto;width:max-content;height:60px;display:flex;align-items:center;gap:12px;padding:0 26px 0 20px;border:0;background:var(--orange);color:var(--ink);font:700 16px/1 var(--body);cursor:pointer;transition:transform .25s,background .25s}
+.reel-play svg{width:26px;height:26px}
+.reel-play:hover{transform:scale(1.05);background:var(--sun)}
+.reel.playing .reel-play{display:none}
+.reel-now{position:absolute;left:12px;top:12px;font:700 13px/1 var(--body);background:var(--ink);color:var(--paper);padding:8px 10px;pointer-events:none}
+.rig .minis{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px 12px}
+.chap{display:grid;gap:8px;padding:0;border:0;background:transparent;color:rgba(255,251,243,.8);font:600 14px/1.25 var(--body);text-align:left;cursor:pointer;min-width:0}
+.chap .thumb{position:relative;display:block}
+.chap img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;opacity:.7;outline:2px solid transparent;outline-offset:2px;transition:opacity .2s,outline-color .2s}
+.chap i{position:absolute;right:6px;bottom:6px;font:600 11px/1 var(--body);font-style:normal;background:rgba(0,0,0,.7);color:#fff;padding:4px 6px}
+.chap:hover img,.chap[aria-current="true"] img{opacity:1;outline-color:var(--orange)}
+.chap[aria-current="true"]{color:var(--paper)}
+@media (max-width:560px){.rig .minis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.loops-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin:72px 0 20px;padding-top:28px;border-top:1px solid rgba(255,251,243,.2)}
+.loops-head p{margin:0;color:rgba(255,251,243,.75)}
+.loops{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:16px}
+.loop{margin:0;display:grid;gap:8px;min-width:0}
+.loop video{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;background:#7f93a8}
+.loop figcaption{font:600 14px/1.25 var(--body);color:rgba(255,251,243,.85)}
+
+.ghead{grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding-top:18px;border-top:2px solid var(--ink);margin-top:24px}
+.ghead:first-child{margin-top:0}
+.ghead span{font-size:15px;color:var(--muted)}
+.ghead[hidden]{display:none}
+
+/* rigging section */
+.rigsec{padding-block:clamp(90px,11vw,150px) clamp(40px,5vw,70px)}
+.rigsec .txt{grid-column:1/5;min-width:0;align-self:start;position:sticky;top:110px}
+.rigsec .txt .lead{margin:24px 0 28px}
+.rigmedia{grid-column:6/13;display:grid;gap:28px;min-width:0}
+.rigvid{margin:0;display:grid;gap:10px}
+.rigvid video{width:100%;aspect-ratio:1280/688;background:#1F2C24;display:block}
+.rigvid figcaption{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:15px}
+.rigvid figcaption span{color:var(--muted)}
+.rig-list{list-style:none;margin:0 0 30px;padding:0;border-top:2px solid var(--ink)}
+.rig-list li{padding:13px 0;border-bottom:1px solid var(--line)}
+@media (max-width:900px){.rigsec .txt,.rigmedia{grid-column:1/-1}.rigsec .txt{position:static}}
+
+/* LIGHTBOX */
+.lb[hidden],.sheet[hidden]{display:none}
+.lb{position:fixed;inset:0;z-index:80;background:rgba(20,28,23,.94);color:var(--paper);display:grid;grid-template-rows:auto minmax(0,1fr) auto;padding:calc(env(safe-area-inset-top,0px) + 14px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px));gap:14px}
+.lb-top{display:flex;justify-content:space-between;align-items:center;gap:16px;max-width:1280px;width:100%;margin:0 auto}
+.lb-top h2{margin:0;font:700 20px/1.2 var(--body)}
+.lb-top p{margin:2px 0 0;font-size:15px;color:rgba(255,251,243,.7)}
+.lb-close{min-height:44px;padding:0 18px;border:2px solid var(--paper);background:transparent;color:var(--paper);font:700 15px/1 var(--body);cursor:pointer}
+.lb-close:hover{background:var(--paper);color:var(--ink)}
+.lb-stage{position:relative;display:grid;place-items:center;min-height:0;max-width:1280px;width:100%;margin:0 auto}
+.lb-img{position:relative;width:100%;height:100%;max-height:100%;display:grid;place-items:center;min-height:0}
+.lb-img > *{max-width:100%;max-height:100%;width:auto;height:100%;aspect-ratio:4/3;object-fit:contain;background:var(--card)}
+.lb-img img{height:auto;max-height:100%}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:52px;height:52px;border-radius:50%;border:0;background:var(--orange);color:var(--ink);display:grid;place-items:center;cursor:pointer;transition:background .2s}
+.lb-nav:hover{background:var(--gold, #F2B443)}
+.lb-nav svg{width:20px;height:20px}
+.lb-prev{left:8px}.lb-next{right:8px}
+.lb-cap{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);background:var(--ink);padding:9px 14px;font:600 14px/1 var(--body);white-space:nowrap}
+.lb-bottom{display:flex;justify-content:center;gap:10px;overflow-x:auto;max-width:1280px;width:100%;margin:0 auto;padding-bottom:2px}
+.lb-thumb{flex:0 0 auto;width:96px;aspect-ratio:4/3;padding:0;border:2px solid transparent;background:var(--card);cursor:pointer;opacity:.6;transition:opacity .2s,border-color .2s;overflow:hidden}
+.lb-thumb svg,.lb-thumb img{width:100%;height:100%;display:block;object-fit:cover}
+.lb-thumb:hover{opacity:1}
+.lb-thumb[aria-current="true"]{opacity:1;border-color:var(--orange)}
+.lb-count{font:600 14px/1 var(--body);color:rgba(255,251,243,.7);font-variant-numeric:tabular-nums}
+@media (max-width:600px){.lb-nav{width:44px;height:44px}.lb-thumb{width:72px}}
+@keyframes lbIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
+.lb-img.anim > *{animation:lbIn .3s ease both}
+@media (prefers-reduced-motion:reduce){.lb-img.anim > *{animation:none}}
+</style>
+
+<script>document.documentElement.classList.add('is-loading');</script>
+<div class="loader" id="loader" role="status" aria-live="polite" aria-label="Loading">
+  <div class="ld-box">
+    <svg class="ld-gem" viewBox="0 0 100 100" aria-hidden="true">
+      <path class="f" d="M50 6 88 28 50 50 12 28Z" style="fill:#F2B443"/><path class="f" d="M88 28v44L50 94V50Z" style="fill:#FF8702"/><path class="f" d="M12 28 50 50v44L12 72Z" style="fill:#60753F"/>
+      <path class="e" d="M50 6 88 28v44L50 94 12 72V28Z" style="--len:260"/><path class="e" d="M12 28 50 50 88 28M50 50v44" style="--len:130"/>
+    </svg>
+    <div class="ld-count"><span id="ldNum">0</span><small>%</small></div>
+    <div class="ld-bar"><i id="ldBar"></i></div>
+    <div class="ld-meta">Kritarth Suvarna &middot; 3D Generalist</div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<header>
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Kritarth Suvarna, home">
+      <svg viewBox="0 0 34 34" aria-hidden="true"><path d="M17 2 31 10v14L17 32 3 24V10Z" fill="#1F2C24"/><path d="M17 2 31 10 17 18 3 10Z" fill="#FF8702"/><path d="M17 18v14L3 24V10Z" fill="#60753F"/></svg>
+      Kritarth Suvarna
+    </a>
+    <nav aria-label="Sections"><ul>
+      <li><a href="#about">About</a></li><li><a href="#work">Work</a></li><li><a href="#animation">Animation</a></li><li><a href="#rigging">Rigging</a></li><li><a href="#experience">Experience</a></li><li><a href="#tools">Tools</a></li>
+    </ul></nav>
+    <a class="btn head-cta" href="#contact">Hire me</a>
+    <button class="menu-btn" type="button" id="menuOpen" aria-expanded="false" aria-controls="sheet">Menu</button>
+  </div>
+</header>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <button class="close" type="button" id="menuClose">Close</button>
+  <ul>
+    <li><a href="#about">About</a></li><li><a href="#work">Work</a></li><li><a href="#animation">Animation</a></li><li><a href="#rigging">Rigging</a></li><li><a href="#experience">Experience</a></li><li><a href="#tools">Tools</a></li><li><a href="#contact">Contact</a></li>
+  </ul>
+</div>
+
+<main id="top">
+
+<!-- HERO -->
+<section class="hero" aria-labelledby="h-hero">
+  <div class="wrap">
+    <div class="g12">
+      <div class="hero-copy">
+        <h1 id="h-hero" class="h1">Low poly,<br><span>high spirits.</span></h1>
+        <p class="lead">I'm <b>Kritarth Suvarna</b>, a 3D generalist and technical artist. I model, paint, rig and animate game art, then ship it in Unity.</p>
+        <div class="hero-cta">
+          <a class="btn" href="#work">See my work <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+          <a class="link" href="#contact">Get in touch</a>
+        </div>
+      </div>
+      <div class="hero-vp">
+        <div class="vp" id="vp">
+          <canvas id="gem" aria-label="Stylized hatchet 3D model. Drag to orbit."></canvas>
+          <img class="vp-fallback" id="vpFallback" src="img/hatchet-color.webp" alt="Stylized hatchet, hand-painted render" hidden>
+          <span class="vp-name">Stylized Hatchet</span>
+          <div class="vp-ui">
+            <div class="modes" role="group" aria-label="Shading">
+              <button type="button" data-mode="tex" aria-pressed="true">Render</button>
+              <button type="button" data-mode="clay" aria-pressed="false">Solid</button>
+              <button type="button" data-mode="wire" aria-pressed="false">Wireframe</button>
+            </div>
+            <span id="vpInfo">loading model&hellip;</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <svg class="ribbon" id="ribbon" viewBox="0 0 1600 110" preserveAspectRatio="none" aria-hidden="true"></svg>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="island mint about" aria-labelledby="h-about">
+  <div class="wrap">
+    <div class="g12">
+      <div style="grid-column:1/-1"><span class="label" id="h-about">About</span></div>
+      <p class="stmt rv">I take game art from <em>first sketch to running in engine</em>. Stylized props, characters, environments and product renders, built by one pair of hands.</p>
+      <div class="facts rv">
+        <div><strong>3+ years</strong><span>shipping art for live mobile games</span></div>
+        <div><strong>Full pipeline</strong><span>model, texture, rig, animate</span></div>
+        <div><strong>Unity</strong><span>state machines, LODs, atlasing</span></div>
+        <div><strong>4 studios</strong><span>from roto intern to pipeline owner</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section id="work" class="work" aria-labelledby="h-work">
+  <div class="wrap">
+    <div class="work-head">
+      <div><span class="label">Selected work</span><h2 id="h-work" class="h2">Things I've built</h2></div>
+      <div class="filters" role="group" aria-label="Filter work">
+        <button type="button" data-f="all" aria-pressed="true">All</button>
+        <button type="button" data-f="char" aria-pressed="false">Characters</button>
+        <button type="button" data-f="env" aria-pressed="false">Environments</button>
+        <button type="button" data-f="prop" aria-pressed="false">Stylized props</button>
+        <button type="button" data-f="product" aria-pressed="false">Hard surface &amp; products</button>
+      </div>
+    </div>
+    <div class="grid" id="grid">
+      <div class="ghead" data-group="char"><h3 class="h3">Characters</h3><span>Modeled, textured and rigged</span></div>
+      <a class="tile feature rv" data-cat="char" href="#work" data-images="img/jacketman-color.webp|img/jacketman-closeup.webp|img/jacketman-wire.webp|img/jacketman-wire-closeup.webp" data-captions="Final render|Close-up|Wireframe|Wireframe close-up"><div class="frame real" style="background:#3C3C3C"><img src="img/jacketman-color.webp" alt="Stylized bearded man in a yellow jacket and beanie" loading="lazy"><span class="badge">Rigged</span><span class="view">View images</span></div><div class="meta"><h3 class="h3">Bob</h3><span class="cat">Character &middot; Rigged</span></div></a>
+      <a class="tile rv" data-cat="char" href="#work" data-images="img/frog-color.webp|img/frog-solid.webp|img/frog-wire.webp" data-captions="Final render|Solid|Wireframe"><div class="frame real" style="background:#3C3C3C"><img src="img/frog-color.webp" alt="Lanky stylized frog character standing" loading="lazy" style="object-fit:contain;transform:scale(1.5)"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Frog</h3><span class="cat">Character</span></div></a>
+      <a class="tile rv" data-cat="char" href="#work" data-images="img/eater-color.webp|img/eater-front.webp|img/eater-side.webp" data-captions="Textured render|Front wireframe|Side wireframe"><div class="frame real" style="background:#3C3C3C"><img src="img/eater-color.webp" alt="Spitter, a horned grey monster with a huge toothy mouth" loading="lazy" style="object-fit:contain;transform:scale(1.15)"><span class="badge">Rigged</span><span class="view">View images</span></div><div class="meta"><h3 class="h3">Spitter</h3><span class="cat">Character &middot; Rigged</span></div></a>
+      <a class="tile rv" data-cat="char" href="#work" data-images="img/brute-front.webp|img/brute-side.webp" data-captions="Front wireframe|Side wireframe"><div class="frame real" style="background:#3C3C3C"><img src="img/brute-front.webp" alt="Muscular low-poly brute character in T-pose, wireframe" loading="lazy" style="object-fit:contain;transform:scale(1.2)"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Brute</h3><span class="cat">Character &middot; Low poly</span></div></a>
+      <a class="tile rv" data-cat="char" href="#work" data-images="img/golem-front.webp|img/golem-side.webp" data-captions="Front wireframe|Side wireframe"><div class="frame real" style="background:#3C3C3C"><img src="img/golem-front.webp" alt="Chunky rock golem in T-pose, wireframe" loading="lazy" style="object-fit:contain;transform:scale(1)"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Rock Golem</h3><span class="cat">Character</span></div></a>
+      <div class="ghead" data-group="env"><h3 class="h3">Environments</h3><span>Lighting, mood and composition</span></div>
+      <a class="tile feature rv" data-cat="env" href="#work" data-images="img/backrooms.webp" data-captions="Final render"><div class="frame real" style="background:#8a8350"><img src="img/backrooms.webp" alt="Endless yellow office room with a single plastic chair" loading="lazy"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Backrooms</h3><span class="cat">Environment</span></div></a>
+      <a class="tile rv" data-cat="env" href="#work" data-images="img/desk-1.webp|img/desk-2.webp|img/desk-wire.webp|img/desk-wire-2.webp" data-captions="Final render|Lighting variant|Clay render|Clay detail"><div class="frame real"><img src="img/desk-1.webp" alt="Moody retro desk corner lit by a lamp" loading="lazy"><span class="view">View images</span></div><div class="meta"><h3 class="h3">The Desk</h3><span class="cat">Environment</span></div></a>
+      <a class="tile feature rv" data-cat="env" href="#work" data-images="img/vena.webp|img/vena-wire.webp" data-captions="Final render|Wireframe"><div class="frame real" style="background:#2a2018"><img src="img/vena.webp" alt="Mech standing on a rural train station platform" loading="lazy"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Vena</h3><span class="cat">Environment</span></div></a>
+      <a class="tile rv" data-cat="env" href="#work" data-images="img/lighthouse.webp|img/lighthouse-2.webp|img/lighthouse-wire.webp" data-captions="Final render|Lighting variant|Clay render"><div class="frame real"><img src="img/lighthouse.webp" alt="Lighthouse at the end of a rocky pier at dusk" loading="lazy" style="object-position:50% 40%"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Lighthouse</h3><span class="cat">Environment</span></div></a>
+      <a class="tile feature rv" data-cat="env" href="#work" data-images="img/temple.webp|img/temple-wire.webp|img/temple-wire-2.webp|img/temple-dragon.webp" data-captions="Final render|Clay render|Clay detail|Dragon close-up"><div class="frame real" style="background:#0E1A33"><img src="img/temple.webp" alt="Creature on a temple roof in front of a huge moon" loading="lazy"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Moonlit Temple</h3><span class="cat">Environment</span></div></a>
+      <a class="tile rv" data-cat="env" href="#work" data-images="img/vecna.webp|img/vecna-wire.webp|img/vecna-wire-2.webp|img/vecna-wire-3.webp" data-captions="Final render|Clay render|Clay detail|Clay with foliage"><div class="frame real"><img src="img/vecna.webp" alt="Victorian house on a pale teal background" loading="lazy"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Vecna House</h3><span class="cat">Environment</span></div></a>
+      <div class="ghead" data-group="prop"><h3 class="h3">Stylized props</h3><span>Game-ready, low poly, hand-painted</span></div>
+      <a class="tile feature rv" data-cat="prop" href="#work" data-images="img/hatchet-color.webp|img/hatchet-side.webp|img/hatchet-wire.webp|img/hatchet-side-wire.webp|img/hatchet-ids.webp|img/hatchet-side-ids.webp" data-captions="Front, textured|Side, textured|Front wireframe|Side wireframe|Front, material IDs|Side, material IDs"><div class="frame real" style="background:#373737"><img src="img/hatchet-color.webp" alt="Stylized hatchet with red wrapped wooden handle" loading="lazy" style="object-fit:contain;transform:scale(1.3)"><span class="badge">Interactive</span><span class="view">View images</span></div><div class="meta"><h3 class="h3">Stylized Hatchet</h3><span class="cat">Stylized prop &middot; Hand-painted</span></div></a>
+      <a class="tile rv" data-cat="prop" href="#work" data-images="img/vehicles-color.webp|img/vehicles-wire.webp" data-captions="Textured|Wireframe"><div class="frame real" style="background:#3a3a3a"><img src="img/vehicles-color.webp" alt="Four stylized vehicles: school bus, truck, tram and small red car" loading="lazy"><span class="badge">Shipped</span><span class="view">View images</span></div><div class="meta"><h3 class="h3">Stylized Vehicles</h3><span class="cat">Game assets &middot; Mobile</span></div></a>
+      <a class="tile feature rv" data-cat="prop" href="#work" data-images="img/circus.webp" data-captions="Textured"><div class="frame real" style="background:#3a3a3a"><img src="img/circus.webp" alt="Stylized circus props: popcorn stand, star boxes, jester spring and ticket booth" loading="lazy" style="object-fit:contain"><span class="badge">Shipped</span><span class="view">View images</span></div><div class="meta"><h3 class="h3">Circus Props</h3><span class="cat">Game assets &middot; Mobile</span></div></a>
+      <a class="tile rv" data-cat="prop" href="#work" data-images="img/staff_front.webp|img/staff_side.webp" data-captions="Front view|Side view"><div class="frame real" style="background:#373737"><img src="img/staff_front.webp" alt="Stylized mage staff with crystal top, wireframe render" loading="lazy" style="object-fit:contain;transform:scale(1.6)"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Mage Staff</h3><span class="cat">Stylized prop</span></div></a>
+      <a class="tile rv" data-cat="prop" href="#work" data-images="img/dagger_front.webp|img/dagger_side.webp" data-captions="Front view|Side view"><div class="frame real" style="background:#373737"><img src="img/dagger_front.webp" alt="Stylized curved dagger with wrapped grip, wireframe render" loading="lazy" style="object-fit:contain;transform:scale(1.7)"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Stylized Dagger</h3><span class="cat">Stylized prop</span></div></a>
+      <a class="tile feature rv" data-cat="prop" href="#work" data-images="img/shield_front.webp|img/shield_back.webp|img/shield_side.webp" data-captions="Front view|Back view|Side view"><div class="frame real" style="background:#373737"><img src="img/shield_front.webp" alt="Wooden round shield with metal rim and straps, wireframe render" loading="lazy" style="object-fit:contain;transform:scale(1.25)"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Round Shield</h3><span class="cat">Stylized prop</span></div></a>
+      <a class="tile rv" data-cat="prop" href="#work" data-images="img/potion_front.webp|img/potion_side.webp" data-captions="Front view|Side view"><div class="frame real" style="background:#373737"><img src="img/potion_front.webp" alt="Round stylized potion bottle with cork, wireframe render" loading="lazy" style="object-fit:contain;transform:scale(1.5)"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Potion Bottle</h3><span class="cat">Stylized prop</span></div></a>
+      <a class="tile feature rv" data-cat="prop" href="#work" data-images="img/weapons-solid.webp|img/weapons-wire.webp" data-captions="Solid|Wireframe"><div class="frame real" style="background:#353535"><img src="img/weapons-solid.webp" alt="Set of eight low-poly weapons: axes, hammer, swords, dagger, scimitar, glaive and bow" loading="lazy" style="object-fit:contain;transform:scale(1.3)"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Low-poly Weapon Set</h3><span class="cat">Stylized props &middot; 8 weapons</span></div></a>
+      <div class="ghead" data-group="product"><h3 class="h3">Hard surface &amp; products</h3><span>Mechanical detail and studio lighting</span></div>
+      <a class="tile feature rv" data-cat="product" href="#work" data-images="img/qrill.webp|img/qrill-close.webp|img/qrill-wire.webp" data-captions="Final render|Close-up|Wireframe"><div class="frame real" style="background:#000000"><img src="img/qrill.webp" alt="Teal and orange sci-fi spaceship" loading="lazy"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Qrill</h3><span class="cat">Hard surface</span></div></a>
+      <a class="tile rv" data-cat="product" href="#work" data-images="img/gravity.webp|img/gravity-wire.webp" data-captions="Final render|Wireframe"><div class="frame real"><img src="img/gravity.webp" alt="Water bottle on a plinth with dappled sunlight" loading="lazy"><span class="view">View images</span></div><div class="meta"><h3 class="h3">Gravity Drinking Water</h3><span class="cat">Product</span></div></a>
+    </div>
+  </div>
+</section>
+
+<!-- ANIMATION -->
+<section id="animation" class="island navy rig" aria-labelledby="h-anim">
+  <div class="wrap">
+    <div class="g12">
+      <div class="media rv">
+        <div class="reel" id="reel">
+          <video id="reelVid" preload="none" playsinline muted loop poster="anim/poster_mech.jpg" aria-label="Animation clip"></video>
+          <button class="reel-play" type="button" id="reelPlay" aria-label="Play Mech animation">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg><span id="reelLabel">Play: Mech</span>
+          </button>
+          <span class="reel-now" id="reelNow">Mech</span>
+        </div>
+        <div class="minis" role="group" aria-label="Choose an animation">
+          <button type="button" class="chap" data-clip="mech" data-title="Mech"><span class="thumb"><img src="anim/clip_mech.jpg" alt="" loading="lazy"><i>0:27</i></span><span>Mech</span></button>
+          <button type="button" class="chap" data-clip="shark" data-title="Shark gameplay"><span class="thumb"><img src="anim/clip_shark.jpg" alt="" loading="lazy"><i>0:35</i></span><span>Shark gameplay</span></button>
+          <button type="button" class="chap" data-clip="character" data-title="Bird Guy animation set"><span class="thumb"><img src="anim/clip_character.jpg" alt="" loading="lazy"><i>1:20</i></span><span>Bird Guy animation set</span></button>
+          <button type="button" class="chap" data-clip="cart" data-title="Bicycle cart"><span class="thumb"><img src="anim/clip_cart.jpg" alt="" loading="lazy"><i>0:57</i></span><span>Bicycle cart</span></button>
+          <button type="button" class="chap" data-clip="armwrestle" data-title="Arm wrestling"><span class="thumb"><img src="anim/clip_armwrestle.jpg" alt="" loading="lazy"><i>0:15</i></span><span>Arm wrestling</span></button>
+          <button type="button" class="chap" data-clip="sofa" data-title="Sleeping on sofa"><span class="thumb"><img src="anim/clip_sofa.jpg" alt="" loading="lazy"><i>0:10</i></span><span>Sleeping on sofa</span></button>
+          <button type="button" class="chap" data-clip="getup" data-title="Drunk get-up"><span class="thumb"><img src="anim/clip_getup.jpg" alt="" loading="lazy"><i>0:08</i></span><span>Drunk get-up</span></button>
+          <button type="button" class="chap" data-clip="cricket" data-title="Cricket batting"><span class="thumb"><img src="anim/clip_cricket.jpg" alt="" loading="lazy"><i>0:05</i></span><span>Cricket batting</span></button>
+        </div>
+      </div>
+      <div class="txt rv">
+        <span class="label">Animation</span>
+        <h2 id="h-anim" class="h2">Brought to life.</h2>
+        <p class="lead">Eight animations from my reel: acting, creature and gameplay loops, sports, a mech and a full character set.</p>
+        <ul class="feat-list">
+          <li>Body mechanics, acting and weight</li>
+          <li>Game loops: idles, cycles and reactions</li>
+          <li>State machines and blend trees in Unity</li>
+          <li>Spine 2D animation for mobile games</li>
+        </ul>
+        <a class="btn" href="#contact">Talk animation <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+      </div>
+    </div>
+    <div class="loops-head rv"><h3 class="h3">Character loops</h3><p>Short game-ready loops for stylized mobile characters.</p></div>
+    <div class="loops">
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/dog_ball_fetch.jpg" data-src="loops/dog_ball_fetch.mp4" aria-label="Dog: ball fetch animation loop"></video><figcaption>Dog: ball fetch</figcaption></figure>
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/dog_ball_throw.jpg" data-src="loops/dog_ball_throw.mp4" aria-label="Dog: ball throw animation loop"></video><figcaption>Dog: ball throw</figcaption></figure>
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/dog_ball_toss.jpg" data-src="loops/dog_ball_toss.mp4" aria-label="Dog: ball toss animation loop"></video><figcaption>Dog: ball toss</figcaption></figure>
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/dog_ball_toss_sequence.jpg" data-src="loops/dog_ball_toss_sequence.mp4" aria-label="Dog: toss sequence animation loop"></video><figcaption>Dog: toss sequence</figcaption></figure>
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/sniff_and_look_up.jpg" data-src="loops/sniff_and_look_up.mp4" aria-label="Dog: sniff and look up animation loop"></video><figcaption>Dog: sniff and look up</figcaption></figure>
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/jump_slow_to_fast.jpg" data-src="loops/jump_slow_to_fast.mp4" aria-label="Dog: jump, slow to fast animation loop"></video><figcaption>Dog: jump, slow to fast</figcaption></figure>
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/harley_juggling.jpg" data-src="loops/harley_juggling.mp4" aria-label="Harley: juggling animation loop"></video><figcaption>Harley: juggling</figcaption></figure>
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/panda_blushing_hearts.jpg" data-src="loops/panda_blushing_hearts.mp4" aria-label="Panda: blushing animation loop"></video><figcaption>Panda: blushing</figcaption></figure>
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/panda_chewing.jpg" data-src="loops/panda_chewing.mp4" aria-label="Panda: chewing animation loop"></video><figcaption>Panda: chewing</figcaption></figure>
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/panda_fast_dance.jpg" data-src="loops/panda_fast_dance.mp4" aria-label="Panda: fast dance animation loop"></video><figcaption>Panda: fast dance</figcaption></figure>
+        <figure class="loop"><video muted loop playsinline preload="none" poster="loops/panda_slow_dance.jpg" data-src="loops/panda_slow_dance.mp4" aria-label="Panda: slow dance animation loop"></video><figcaption>Panda: slow dance</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- RIGGING -->
+<section id="rigging" class="rigsec" aria-labelledby="h-rig">
+  <div class="wrap">
+    <div class="g12">
+      <div class="txt rv">
+        <span class="label">Rigging</span>
+        <h2 id="h-rig" class="h2">Rigged for fun.</h2>
+        <p class="lead muted">Rigs animators enjoy using and engines accept without a fight. Built in Blender and Maya, ready for Unity.</p>
+        <ul class="rig-list">
+          <li>IK/FK switching on arms and legs</li>
+          <li>Custom deformers that cut skinning fixes</li>
+          <li>Spline IK chains for tails and tentacles</li>
+          <li>Clean, mobile-friendly bone counts</li>
+          <li>Spine 2D rigs for two mobile games</li>
+        </ul>
+        <a class="btn" href="#contact">Talk rigs <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+      </div>
+      <div class="rigmedia rv">
+        <figure class="rigvid big"><video controls muted playsinline preload="none" poster="rig/character-rig.jpg" src="rig/character-rig.mp4" aria-label="Character rig demo in Blender"></video><figcaption><b>Character rig</b><span>Full body controls and deformation test &middot; 1:56</span></figcaption></figure>
+        <figure class="rigvid"><video controls muted playsinline preload="none" poster="rig/tentacle-rig.jpg" src="rig/tentacle-rig.mp4" aria-label="Tentacle rig demo in Blender"></video><figcaption><b>Tentacle rig</b><span>IK chain with curl controls &middot; 0:49</span></figcaption></figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="svc" aria-labelledby="h-svc">
+  <div class="wrap">
+    <div class="g12">
+      <div class="intro rv"><span class="label">What I do</span><h2 id="h-svc" class="h2">Idea in, game-ready out</h2><p class="lead muted">Five stages, one person. Hand me a concept and get back an asset that runs.</p></div>
+      <ol class="rv">
+        <li><div><h3 class="h3">Modeling</h3><p class="muted">Hard surface and organic, stylized and realistic, low poly to budget.</p></div></li>
+        <li><div><h3 class="h3">Texturing</h3><p class="muted">Hand-painted and PBR in Substance 3D Painter.</p></div></li>
+        <li><div><h3 class="h3">Rigging</h3><p class="muted">Character and prop rigs, custom deformers, Spine 2D.</p></div></li>
+        <li><div><h3 class="h3">Animation</h3><p class="muted">Game loops, state machines and blend trees.</p></div></li>
+        <li><div><h3 class="h3">Engine integration</h3><p class="muted">Unity setup, LODs, texture atlasing and optimization.</p></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="island lilac exp" aria-labelledby="h-exp">
+  <div class="wrap">
+    <div class="g12">
+      <div class="intro rv"><span class="label">Experience</span><h2 id="h-exp" class="h2">Shipped at real studios</h2></div>
+      <div class="jobs rv">
+        <div><h3 class="h3">Xpress Gaming</h3><time>2023 &ndash; 2026</time><p>3D Generalist. I own the asset pipeline across three live mobile games.</p></div>
+        <div><h3 class="h3">StudioCupcakes</h3><time>2022 &ndash; 2023</time><p>Rigger and animator. Mobile-ready rigs and Unity animation.</p></div>
+        <div><h3 class="h3">ViaCreate Productions</h3><time>2022</time><p>Lead 3D artist. Look development for a stylized music video.</p></div>
+        <div><h3 class="h3">Toolbox Studios</h3><time>2021 &ndash; 2022</time><p>Roto artist intern on client VFX projects.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TOOLS -->
+<section id="tools" class="tools" aria-labelledby="h-tools">
+  <div class="wrap">
+    <div class="tools-head">
+      <div><span class="label">Tools I build</span><h2 id="h-tools" class="h2">Fixing my own workflow</h2></div>
+      <p class="lead muted">When a task annoys me twice, I build a tool for it. A Windows app on the Microsoft Store and three Figma plugins so far.</p>
+    </div>
+    <div class="tgrid">
+      <article class="tcard hero-tool rv">
+        <div>
+          <div class="tname"><img src="tools/footnote-icon.webp" alt="" width="44" height="44"><span class="tstat live">Live on Microsoft Store</span></div>
+          <h3 class="h2" style="margin-top:18px">FootNote</h3>
+          <p class="lead">Leave a note on any file, right inside Windows Explorer, so every saved version tells you what it is. No renaming files into paragraphs.</p>
+          <ul>
+            <li>Right-click any file or folder and choose "Add FootNote"</li>
+            <li>Reminders, clickable links and Markdown or CSV export</li>
+            <li>Notes never modify the file itself</li>
+          </ul>
+          <div class="tbtns"><a class="btn" href="https://apps.microsoft.com/detail/9NGH976T7C78" target="_blank" rel="noopener">Get it free <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
+          <button type="button" class="link tgal" data-gal="footnote">See screenshots</button></div>
+        </div>
+        <div class="tshot"><video src="tools/footnote-demo.mp4" poster="tools/footnote-demo.jpg" muted loop playsinline autoplay aria-label="FootNote demo: adding a note to a file in Explorer"></video></div>
+      </article>
+      <article class="tcard tplug rv" data-gal="reslot" data-title="Reslot" data-sub="Figma plugin" data-images="tools/reslot-cover.webp|tools/reslot-1.webp|tools/reslot-2.webp|tools/reslot-3.webp" data-captions="Cover|Swap states|Blocked state|Features">
+        <button type="button" class="tcover" aria-label="View Reslot images"><img src="tools/reslot-cover.webp" alt="Reslot cover art" loading="lazy"><span class="view">View images</span></button>
+        <div class="tname"><img src="tools/reslot-icon.webp" alt="" width="40" height="40"><span class="tstat">Figma plugin &middot; Working build</span></div>
+        <div><h3 class="h3">Reslot</h3><p class="muted" style="margin-top:8px">Swap any two elements in one click, exactly in place. Handles auto-layout too, reordering items without breaking their sizing.</p></div>
+        <a class="plink" href="https://www.figma.com/community/plugin/1684137227500159600/reslot" target="_blank" rel="noopener">Open in Figma Community <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
+      </article>
+      <article class="tcard tplug rv" data-gal="instancer" data-title="Instancer" data-sub="Figma plugin" data-images="tools/instancer-cover.webp|tools/instancer-1.webp|tools/instancer-2.webp|tools/instancer-3.webp|tools/instancer-4.webp" data-captions="Cover|Home|Componentize review|Swap review|Swap report">
+        <button type="button" class="tcover" aria-label="View Instancer images"><img src="tools/instancer-cover.webp" alt="Instancer cover art" loading="lazy"><span class="view">View images</span></button>
+        <div class="tname"><img src="tools/instancer-icon.webp" alt="" width="40" height="40"><span class="tstat">Figma plugin &middot; Built</span></div>
+        <div><h3 class="h3">Instancer</h3><p class="muted" style="margin-top:8px">Forgot to make that button a component before duplicating the screen 80 times? Instancer componentizes every match in place, and swaps stale instances for a new component.</p></div>
+        <a class="plink" href="https://www.figma.com/community/plugin/1681324662984113397/instancer" target="_blank" rel="noopener">Open in Figma Community <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
+      </article>
+      <article class="tcard tplug rv" data-gal="figtoshop" data-title="FigToShop" data-sub="Figma plugin" data-images="tools/figtoshop-cover.webp|tools/figtoshop-1.webp|tools/figtoshop-2.webp|tools/figtoshop-3.webp" data-captions="Cover|Plugin home|Export ready|Pro unlocked">
+        <button type="button" class="tcover" aria-label="View FigToShop images"><img src="tools/figtoshop-cover.webp" alt="FigToShop cover art" loading="lazy"><span class="view">View images</span></button>
+        <div class="tname"><img src="tools/figtoshop-icon.webp" alt="" width="40" height="40"><span class="tstat">Figma plugin &middot; Built</span></div>
+        <div><h3 class="h3">FigToShop</h3><p class="muted" style="margin-top:8px">Exports Figma frames as real layered PSD files. Groups stay groups, text stays editable, and blend modes carry over. Runs fully inside Figma, no server.</p></div>
+        <a class="plink" href="https://www.figma.com/community/plugin/1679758569018457578/figtoshop" target="_blank" rel="noopener">Open in Figma Community <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 11 11 5M6 5h5v5"/></svg></a>
+      </article>
+      <span hidden id="footnoteGal" data-title="FootNote" data-sub="Windows app" data-images="tools/footnote-1.webp|tools/footnote-2.webp|tools/footnote-3.webp|tools/footnote-4.webp|tools/footnote-5.webp" data-captions="A footnote for every file|Your notes. Your PC. Nothing else.|Know which version is the real one|Catch mistakes before it's too late|Make it look like yours"></span>
+    </div>
+  </div>
+</section>
+
+<!-- DEVLOG -->
+<section class="log" aria-labelledby="h-log">
+  <div class="wrap">
+    <span class="label">Devlog</span>
+    <h2 id="h-log" class="h2 rv">On the desk</h2>
+    <div class="posts">
+      <article class="post rv"><div class="row"><span class="chip">WIP</span><time datetime="2026-11">Nov 2026</time></div><h3 class="h3">Bomb prop, last of the set</h3><p>Fuse and skull mark blocked out. Painting next.</p></article>
+      <article class="post rv"><div class="row"><span class="chip">Breakdown</span><time datetime="2026-10">Oct 2026</time></div><h3 class="h3">Six props on one palette</h3><p>Hatchet, potion, staff, dagger, chest and shield.</p></article>
+      <article class="post rv"><div class="row"><span class="chip">News</span><time datetime="2026-11">Nov 2026</time></div><h3 class="h3">3D work moves here</h3><p>This site holds the 3D. UI UX stays on Behance.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- FINALE -->
+<section id="contact" class="island navy finale" aria-labelledby="h-contact">
+  <div class="wrap">
+    <div class="g12">
+      <div class="l">
+        <span class="label">Contact</span>
+        <h2 id="h-contact" class="h2">Let's make something <span>fun.</span></h2>
+        <p class="lead">Open to full-time roles, freelance and collabs in game art and tech art.</p>
+        <div class="mail"><code id="email">kritarthasuvarna@gmail.com</code><button class="btn" type="button" id="copy"><span>Copy email</span></button></div>
+      </div>
+      <form id="form" novalidate>
+        <div class="field"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required aria-describedby="e-name"><span class="err" id="e-name"></span></div>
+        <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required aria-describedby="e-email"><span class="err" id="e-email"></span></div>
+        <div class="field"><label for="f-subject">What's it about?</label><select id="f-subject" name="subject"><option>Full-time role</option><option>Freelance project</option><option>Collab</option><option>Just saying hi</option></select></div>
+        <div class="field"><label for="f-msg">Message</label><textarea id="f-msg" name="message" required aria-describedby="e-msg"></textarea><span class="err" id="e-msg"></span></div>
+        <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap"><button class="btn" type="submit">Send message <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h11M9 4l4 4-4 4"/></svg></button><p class="status" id="status" role="status"></p></div>
+      </form>
+    </div>
+    <div class="bigname" aria-hidden="true"><div class="bigname-track"><span>Kritarth <b>Suvarna</b> &middot;</span><span>Kritarth <b>Suvarna</b> &middot;</span></div></div>
+    <div class="foot">
+      <span>&copy; 2026 Kritarth K. Suvarna</span>
+      <nav aria-label="Footer"><a href="https://www.behance.net/kritarthsuvarna1" target="_blank" rel="noopener">Behance (UI UX)</a></nav>
+    </div>
+  </div>
+</section>
+
+</main>
+<button class="totop" type="button" id="totop" aria-label="Back to top"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 14V3M4 7l4-4 4 4"/></svg></button>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-labelledby="lb-title" hidden>
+  <div class="lb-top">
+    <div><h2 id="lb-title">Project</h2><p id="lb-sub"></p></div>
+    <div style="display:flex;gap:16px;align-items:center"><span class="lb-count" id="lb-count">1 / 4</span><button class="lb-close" type="button" id="lb-close">Close</button></div>
+  </div>
+  <div class="lb-stage">
+    <div class="lb-img" id="lb-img"></div>
+    <button class="lb-nav lb-prev" type="button" id="lb-prev" aria-label="Previous image"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 8H3M7 4 3 8l4 4"/></svg></button>
+    <button class="lb-nav lb-next" type="button" id="lb-next" aria-label="Next image"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h11M9 4l4 4-4 4"/></svg></button>
+    <span class="lb-cap" id="lb-cap"></span>
+  </div>
+  <div class="lb-bottom" id="lb-thumbs" role="group" aria-label="Images in this project"></div>
+</div>
+
+<script>
+(function(){
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const O='#FF8702',S='#F2B443',M='#60753F',L='#B95B43',N='#1F2C24',P='#FFFBF3';
+  const glyphs={
+    prop:'<polygon points="200,70 270,110 270,190 200,230 130,190 130,110" fill="'+O+'"/><polygon points="200,70 270,110 200,150 130,110" fill="'+S+'"/><polygon points="200,150 270,110 270,190 200,230" fill="'+N+'" opacity=".85"/>',
+    staff:'<rect x="193" y="95" width="14" height="150" fill="'+N+'"/><polygon points="200,40 228,85 200,112 172,85" fill="'+O+'"/><polygon points="200,40 228,85 200,85" fill="'+S+'"/>',
+    chest:'<rect x="120" y="135" width="160" height="90" fill="'+O+'"/><polygon points="120,135 140,95 260,95 280,135" fill="'+S+'"/><rect x="120" y="130" width="160" height="10" fill="'+N+'"/><rect x="190" y="128" width="20" height="28" fill="'+N+'"/>',
+    bomb:'<polygon points="195,104 248,134 248,196 195,226 142,196 142,134" fill="'+N+'"/><path d="M230 112l26-20 14 8" stroke="'+O+'" stroke-width="5" fill="none"/><circle cx="272" cy="96" r="8" fill="'+S+'"/>',
+    char:'<polygon points="200,62 228,78 228,110 200,126 172,110 172,78" fill="'+N+'"/><polygon points="150,232 176,140 224,140 250,232" fill="'+O+'"/>',
+    char2:'<polygon points="200,72 224,86 224,114 200,128 176,114 176,86" fill="'+O+'"/><polygon points="160,240 200,140 240,240" fill="'+N+'"/>',
+    env:'<polygon points="0,240 90,150 160,200 240,110 330,190 400,140 400,300 0,300" fill="'+N+'"/><polygon points="0,270 120,200 220,250 320,210 400,240 400,300 0,300" fill="'+O+'"/><polygon points="310,58 332,80 310,102 288,80" fill="'+S+'"/>',
+    product:'<rect x="168" y="90" width="64" height="140" fill="'+N+'"/><rect x="184" y="62" width="32" height="30" fill="'+O+'"/><rect x="168" y="140" width="64" height="38" fill="'+S+'"/>',
+    rig:'<g stroke="'+S+'" stroke-width="4" fill="none"><path d="M200 70v80M200 150l-40 70M200 150l40 70M200 95l-55 35M200 95l55 35"/></g><g fill="'+O+'"><circle cx="200" cy="70" r="9"/><circle cx="200" cy="150" r="9"/><circle cx="160" cy="220" r="8"/><circle cx="240" cy="220" r="8"/><circle cx="145" cy="130" r="8"/><circle cx="255" cy="130" r="8"/></g>',
+    pose:'<g stroke="'+P+'" stroke-width="8" fill="none"><path d="M200 80v75l-35 60M200 155l35 60M200 105l-48-28M200 105l52 18"/></g><polygon points="200,46 214,60 200,74 186,60" fill="'+O+'"/>',
+    weights:'<defs><radialGradient id="w"><stop offset="0" stop-color="'+O+'"/><stop offset=".55" stop-color="'+S+'"/><stop offset="1" stop-color="'+M+'"/></radialGradient></defs><ellipse cx="200" cy="150" rx="130" ry="100" fill="url(#w)"/>',
+    anim:'<g fill="'+O+'"><rect x="96" y="176" width="28" height="28" opacity=".35"/><rect x="156" y="136" width="28" height="28" opacity=".55"/><rect x="216" y="116" width="28" height="28" opacity=".75"/><rect x="276" y="136" width="28" height="28"/></g>'
+  };
+  const tri=[];for(let y=0;y<=300;y+=50)for(let x=0;x<=400;x+=50)tri.push('M'+x+' '+y+'l50 50');
+  const wire='<svg class="wire" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g stroke="#FF8702" stroke-width="1" opacity=".55" fill="none">'+
+    Array.from({length:9},(_,i)=>'<path d="M'+i*50+' 0V300"/>').join('')+Array.from({length:7},(_,i)=>'<path d="M0 '+i*50+'H400"/>').join('')+'<path d="'+tri.join('')+'"/></g></svg>';
+  document.querySelectorAll('[data-ph]').forEach(f=>{
+    const dark=f.closest('.navy');
+    f.insertAdjacentHTML('afterbegin','<svg class="ph" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect width="400" height="300" fill="'+(dark?'#2B3B31':'#EDEEE1')+'"/>'+(glyphs[f.dataset.ph]||glyphs.prop)+'</svg>'+(f.closest('.tile')?wire:''));
+  });
+
+  /* ribbon: triangle strip, animates only while on screen */
+  const rb=document.getElementById('ribbon'),NS=40,cols=['#FF8702','#FF9C2E','#F2B443','#FF8702','#B95B43'],polys=[];
+  for(let i=0;i<NS*2;i++){const p=document.createElementNS('http://www.w3.org/2000/svg','polygon');p.setAttribute('fill',cols[(i*7)%cols.length]);rb.appendChild(p);polys.push(p);}
+  function strip(t){const w=1600/NS,top=[],bot=[];for(let i=0;i<=NS;i++){const x=i*w,y=40+Math.sin(i*.42+t)*18+Math.sin(i*.13)*8;top.push([x,y]);bot.push([x+w*.5,y+40+Math.sin(i*.5+t*1.3)*6]);}
+    for(let i=0;i<NS;i++){polys[i*2].setAttribute('points',top[i]+' '+top[i+1]+' '+bot[i]);polys[i*2+1].setAttribute('points',top[i+1]+' '+bot[i+1]+' '+bot[i]);}}
+  strip(0);
+  let ribbonOn=false,raf=0;
+  function rloop(n){strip(n/2400);if(ribbonOn)raf=requestAnimationFrame(rloop);}
+  if(!reduce)new IntersectionObserver(e=>{ribbonOn=e[0].isIntersecting;if(ribbonOn){cancelAnimationFrame(raf);raf=requestAnimationFrame(rloop);}}).observe(rb);
+
+  /* hero viewport: real hatchet model (three.js) */
+  (function(){const cv=document.getElementById('gem'),info=document.getElementById('vpInfo'),fb=document.getElementById('vpFallback'),btns=[...document.querySelectorAll('.modes button')];
+    function fail(){cv.hidden=true;fb.hidden=false;info.textContent='render';document.querySelector('.modes').hidden=true;}
+    if(!window.THREE||!THREE.GLTFLoader){fail();return;}
+    let renderer;try{renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});}catch(e){fail();return;}
+    renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.outputEncoding=THREE.sRGBEncoding;
+    const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(30,1,.01,100);
+    scene.add(new THREE.HemisphereLight(0xfff4e0,0x2b3b31,1.05));const key=new THREE.DirectionalLight(0xffffff,1.15);key.position.set(3,4,5);scene.add(key);
+    const rim=new THREE.DirectionalLight(0xff8702,.6);rim.position.set(-4,2,-3);scene.add(rim);
+    const shadow=new THREE.Mesh(new THREE.CircleGeometry(1,48),new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:.28}));shadow.rotation.x=-Math.PI/2;scene.add(shadow);
+    const controls=new THREE.OrbitControls(cam,cv);controls.enableZoom=false;controls.enablePan=false;controls.enableDamping=true;controls.autoRotate=!reduce;controls.autoRotateSpeed=1.6;
+    const pivot=new THREE.Group();scene.add(pivot);let meshes=[],orig=new Map(),wires=[],clay=new THREE.MeshStandardMaterial({color:0xbdbdbd,roughness:.85,flatShading:false});
+    function size(){const r=cv.getBoundingClientRect();renderer.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;cam.updateProjectionMatrix();}
+    function loadModel(onLoad,onErr){fetch('model/Hatchet.json').then(r=>{if(!r.ok)throw new Error('model '+r.status);return r.json();}).then(j=>{
+        const b64=j.buffers[0].uri.split(',')[1],bin=Uint8Array.from(atob(b64),c=>c.charCodeAt(0));delete j.buffers[0].uri;
+        const enc=new TextEncoder();let js=enc.encode(JSON.stringify(j));const jp=(4-js.length%4)%4,bp=(4-bin.length%4)%4;
+        const total=12+8+js.length+jp+8+bin.length+bp,buf=new ArrayBuffer(total),dv=new DataView(buf),u8=new Uint8Array(buf);let o=0;
+        dv.setUint32(o,0x46546C67,true);dv.setUint32(o+4,2,true);dv.setUint32(o+8,total,true);o=12;
+        dv.setUint32(o,js.length+jp,true);dv.setUint32(o+4,0x4E4F534A,true);o+=8;u8.set(js,o);u8.fill(0x20,o+js.length,o+js.length+jp);o+=js.length+jp;
+        dv.setUint32(o,bin.length+bp,true);dv.setUint32(o+4,0x004E4942,true);o+=8;u8.set(bin,o);
+        new THREE.GLTFLoader().parse(buf,'model/',onLoad,onErr);}).catch(onErr);}
+    loadModel(g=>{
+      const root=g.scene||g.scenes[2];pivot.add(root);let tris=0;
+      root.traverse(o=>{if(o.isMesh){meshes.push(o);orig.set(o,o.material);if(o.material.map)o.material.map.anisotropy=4;
+        const idx=o.geometry.index;tris+=(idx?idx.count:o.geometry.attributes.position.count)/3;
+        const w=new THREE.LineSegments(new THREE.WireframeGeometry(o.geometry),new THREE.LineBasicMaterial({color:0xF2B443,transparent:true,opacity:.85}));w.visible=false;o.add(w);wires.push(w);}});
+      const box=new THREE.Box3().setFromObject(root),c=box.getCenter(new THREE.Vector3()),sz=box.getSize(new THREE.Vector3());
+      root.position.sub(c);const h=Math.max(sz.x,sz.y,sz.z);
+      shadow.position.y=-sz.y/2-h*.04;shadow.scale.setScalar(h*.2);
+      cam.position.set(h*2.6,h*.15,h*.5);controls.target.set(0,0,0);controls.update();
+      info.textContent=Math.round(tris).toLocaleString()+' tris \u00b7 drag to orbit';size();
+    },e=>{console.error('Hatchet viewer:',e);fail();});
+    function setMode(m){meshes.forEach(o=>{o.material=m==='tex'?orig.get(o):clay;o.material.visible=true;});
+      if(m==='wire')meshes.forEach(o=>{o.material=clay;});
+      wires.forEach(w=>w.visible=(m==='wire'));clay.color.set(m==='wire'?0x2b3b31:0xbdbdbd);
+      btns.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===m)));}
+    btns.forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+    let on=true;new IntersectionObserver(e=>{on=e[0].isIntersecting;}).observe(cv);
+    addEventListener('resize',size);size();
+    (function loop(){requestAnimationFrame(loop);if(!on)return;controls.update();renderer.render(scene,cam);})();
+  })();
+
+  /* reveals: only elements that start below the fold animate */
+  if(!reduce){const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}}),{rootMargin:'0px 0px -8% 0px'});
+    document.querySelectorAll('.rv').forEach(el=>{if(el.getBoundingClientRect().top>innerHeight)io.observe(el);});}
+
+  /* lightbox: each tile opens its own gallery.
+     Real images later: add data-images="a.jpg|b.jpg" and data-captions="Beauty|Wireframe" to a tile. */
+  const VIEWS={char:['Beauty render','Turntable','Wireframe','Rig controls'],env:['Beauty render','Clay render','Detail shot','Wireframe'],prop:['Beauty render','Wireframe','UV layout','Texture maps'],product:['Beauty render','Detail shot','Wireframe','Materials']};
+  function phSVG(key,view,bg){const g=glyphs[key]||glyphs.prop;let extra='',base=g,fill=bg||'#EDEEE1';
+    if(/Wireframe|Rig/.test(view)){fill='#1F2C24';base='<g opacity=".25">'+g+'</g>';extra=wire.replace('class="wire"','').replace('opacity=".55"','opacity=".9"');}
+    else if(/UV/.test(view)){extra='';base='<g>'+Array.from({length:48},(_,i)=>{const x=(i%8)*50,y=Math.floor(i/8)*50;return (i+Math.floor(i/8))%2?'<rect x="'+x+'" y="'+y+'" width="50" height="50" fill="#60753F" opacity=".35"/>':''}).join('')+'</g><g transform="translate(40 30) scale(.8)">'+g+'</g>';}
+    else if(/Clay/.test(view)){base='<g style="filter:grayscale(1)">'+g+'</g>';}
+    else if(/Detail/.test(view)){base='<g transform="translate(-200 -150) scale(2)">'+g+'</g>';}
+    else if(/Texture|Materials/.test(view)){base='<rect x="20" y="20" width="170" height="125" fill="#FF8702"/><rect x="210" y="20" width="170" height="125" fill="#F2B443"/><rect x="20" y="155" width="170" height="125" fill="#60753F"/><rect x="210" y="155" width="170" height="125" fill="#B95B43"/>';}
+    else if(/Turntable/.test(view)){base='<g transform="translate(400 0) scale(-1 1)">'+g+'</g>';}
+    return '<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><rect width="400" height="300" fill="'+fill+'"/>'+base+extra+'</svg>';}
+  const lb=document.getElementById('lb'),lbImg=document.getElementById('lb-img'),lbThumbs=document.getElementById('lb-thumbs'),lbCap=document.getElementById('lb-cap'),lbCount=document.getElementById('lb-count');
+  let items=[],cur=0,opener=null;
+  function show(i){cur=(i+items.length)%items.length;const it=items[cur];
+    lbImg.classList.remove('anim');void lbImg.offsetWidth;lbImg.classList.add('anim');
+    lbImg.innerHTML=it.src?'<img src="'+it.src+'" alt="'+it.cap.replace(/"/g,'')+'">':it.svg;
+    lbCap.textContent=it.cap;lbCount.textContent=(cur+1)+' / '+items.length;
+    [...lbThumbs.children].forEach((b,k)=>b.setAttribute('aria-current',k===cur?'true':'false'));}
+  function openLB(tile){const fr=tile.querySelector('[data-ph]'),key=fr?fr.dataset.ph:'prop',cat=tile.dataset.cat||'prop';
+    const imgs=(tile.dataset.images||'').split('|').filter(Boolean),caps=(tile.dataset.captions||'').split('|');
+    items=imgs.length?imgs.map((s,i)=>({src:s,cap:caps[i]||('Image '+(i+1))})):(VIEWS[cat]||VIEWS.prop).map(v=>({svg:phSVG(key,v),cap:v}));
+    document.getElementById('lb-title').textContent=tile.dataset.title||tile.querySelector('h3').textContent;
+    document.getElementById('lb-sub').textContent=(tile.dataset.sub||(tile.querySelector('.cat')||{}).textContent||'')+(imgs.length?'':' \u00b7 placeholder views');
+    lbThumbs.innerHTML='';items.forEach((it,k)=>{const b=document.createElement('button');b.type='button';b.className='lb-thumb';b.setAttribute('aria-label','Show '+it.cap);b.innerHTML=it.src?'<img src="'+it.src+'" alt="">':it.svg;b.addEventListener('click',()=>show(k));lbThumbs.appendChild(b);});
+    opener=tile;lb.hidden=false;document.body.style.overflow='hidden';show(0);document.getElementById('lb-close').focus();}
+  function closeLB(){lb.hidden=true;document.body.style.overflow='';if(opener)opener.focus();}
+  document.querySelectorAll('#grid .tile').forEach(t=>t.addEventListener('click',e=>{e.preventDefault();openLB(t);}));
+  document.querySelectorAll('.tplug .tcover').forEach(b=>b.addEventListener('click',()=>openLB(b.closest('.tplug'))));
+  document.querySelectorAll('.tgal').forEach(b=>b.addEventListener('click',()=>{const g=document.getElementById('footnoteGal');openLB(g);opener=b;}));
+  document.getElementById('lb-close').addEventListener('click',closeLB);
+  document.getElementById('lb-prev').addEventListener('click',()=>show(cur-1));
+  document.getElementById('lb-next').addEventListener('click',()=>show(cur+1));
+  lb.addEventListener('click',e=>{if(e.target===lb||e.target.classList.contains('lb-stage'))closeLB();});
+  lb.addEventListener('keydown',e=>{if(e.key==='Escape')closeLB();else if(e.key==='ArrowRight')show(cur+1);else if(e.key==='ArrowLeft')show(cur-1);
+    else if(e.key==='Tab'){const f=[...lb.querySelectorAll('button')],first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+  let tx=null;lbImg.addEventListener('touchstart',e=>{tx=e.touches[0].clientX},{passive:true});
+  lbImg.addEventListener('touchend',e=>{if(tx==null)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>40)show(cur+(dx<0?1:-1));tx=null;});
+
+  /* animation showcase: one player, pick a clip */
+  (function(){const v=document.getElementById('reelVid'),box=document.getElementById('reel'),play=document.getElementById('reelPlay'),now=document.getElementById('reelNow'),chaps=[...document.querySelectorAll('.chap')];
+    let cur='mech';
+    function mark(){chaps.forEach(c=>c.setAttribute('aria-current',String(c.dataset.clip===cur)));}
+    function start(k,title){cur=k;v.poster='anim/clip_'+k+'.jpg';v.src='anim/clip_'+k+'.mp4';v.controls=true;box.classList.add('playing');now.textContent=title;mark();v.play().catch(()=>{});}
+    play.addEventListener('click',()=>start('mech','Mech'));
+    chaps.forEach(c=>c.addEventListener('click',()=>{start(c.dataset.clip,c.dataset.title);if(innerWidth<900)box.scrollIntoView({block:'center',behavior:reduce?'auto':'smooth'});}));
+    mark();
+  })();
+
+  /* character loops: play only while on screen (or on hover when reduced motion is on) */
+  (function(){const vids=[...document.querySelectorAll('.loop video')];
+    const ensure=v=>{if(!v.src)v.src=v.dataset.src;};
+    if(reduce){vids.forEach(v=>{v.parentElement.addEventListener('mouseenter',()=>{ensure(v);v.play().catch(()=>{});});v.parentElement.addEventListener('mouseleave',()=>v.pause());});return;}
+    const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){ensure(v);v.play().catch(()=>{});}else v.pause();}),{rootMargin:'100px'});
+    vids.forEach(v=>io.observe(v));
+  })();
+
+  /* back to top */
+  (function(){const b=document.getElementById('totop');const on=()=>b.classList.toggle('show',scrollY>700);addEventListener('scroll',on,{passive:true});on();
+    b.addEventListener('click',()=>scrollTo({top:0,behavior:reduce?'auto':'smooth'}));})();
+
+  /* loader: counts real progress (fonts + first-screen images + page load), min 1.1s, max 4s */
+  (function(){const L=document.getElementById('loader'),num=document.getElementById('ldNum'),bar=document.getElementById('ldBar');
+    if(!document.documentElement.classList.contains('is-loading'))return;
+    const edges=[...L.querySelectorAll('.e')],faces=[...L.querySelectorAll('.f')];
+    const imgs=[...document.querySelectorAll('img')].filter(i=>i.loading!=='lazy');
+    const tasks=[document.fonts?document.fonts.ready:Promise.resolve(),new Promise(r=>document.readyState==='complete'?r():addEventListener('load',r,{once:true})),...imgs.map(i=>i.complete?Promise.resolve():new Promise(r=>{i.addEventListener('load',r,{once:true});i.addEventListener('error',r,{once:true});}))];
+    let done=0,shown=0,t0=performance.now(),finished=false;
+    tasks.forEach(p=>p.then(()=>done++));
+    function paint(p){num.textContent=Math.round(p);bar.style.width=p+'%';
+      edges.forEach(e=>e.style.strokeDashoffset=(+getComputedStyle(e).getPropertyValue('--len'))*(1-Math.min(1,p/80)));
+      if(p>85)faces.forEach(f=>f.style.opacity=1);}
+    function finish(){if(finished)return;finished=true;paint(100);setTimeout(()=>{L.classList.add('leaving');document.documentElement.classList.remove('is-loading');
+      L.addEventListener('transitionend',()=>L.remove(),{once:true});setTimeout(()=>L.remove(),1400);},250);}
+    (function tick(){const el=performance.now()-t0,target=Math.min(done/tasks.length*100,el<1100?el/1100*100:100);
+      shown+=(target-shown)*.18;paint(shown);
+      if((done>=tasks.length&&el>1100&&shown>99)||el>4000)return finish();requestAnimationFrame(tick);})();
+  })();
+
+  /* filters with counts */
+  const fbtns=[...document.querySelectorAll('.filters button')],tiles=[...document.querySelectorAll('#grid .tile')];
+  fbtns.forEach(b=>{const n=b.dataset.f==='all'?tiles.length:tiles.filter(t=>t.dataset.cat===b.dataset.f).length;b.insertAdjacentHTML('beforeend','<small>'+n+'</small>');
+    b.addEventListener('click',()=>{fbtns.forEach(x=>x.setAttribute('aria-pressed',x===b));tiles.forEach(t=>t.hidden=!(b.dataset.f==='all'||t.dataset.cat===b.dataset.f));document.querySelectorAll('#grid .ghead').forEach(h=>h.hidden=!(b.dataset.f==='all'||h.dataset.group===b.dataset.f));});});
+
+  /* active nav */
+  const navLinks=[...document.querySelectorAll('header nav a')];
+  const so=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting)navLinks.forEach(a=>a.setAttribute('aria-current',a.getAttribute('href')==='#'+en.target.id?'true':'false'));}),{rootMargin:'-40% 0px -55% 0px'});
+  ['about','work','animation','rigging','experience','tools'].forEach(id=>so.observe(document.getElementById(id)));
+
+  /* mobile menu */
+  const sheet=document.getElementById('sheet'),openB=document.getElementById('menuOpen'),closeB=document.getElementById('menuClose');
+  const close=()=>{sheet.hidden=true;openB.setAttribute('aria-expanded','false');document.body.style.overflow='';openB.focus();};
+  openB.addEventListener('click',()=>{sheet.hidden=false;openB.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';closeB.focus();});
+  closeB.addEventListener('click',close);
+  sheet.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{sheet.hidden=true;openB.setAttribute('aria-expanded','false');document.body.style.overflow='';}));
+  sheet.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const f=[...sheet.querySelectorAll('button,a')],first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+
+  /* copy */
+  document.getElementById('copy').addEventListener('click',async e=>{const s=e.currentTarget.querySelector('span'),el=document.getElementById('email');
+    try{await navigator.clipboard.writeText(el.textContent);s.textContent='Copied';}catch{const r=document.createRange();r.selectNodeContents(el);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);s.textContent='Selected, press Ctrl+C';}
+    setTimeout(()=>s.textContent='Copy email',2200);});
+
+  /* form with per-field errors */
+  const form=document.getElementById('form'),msgs={'f-name':'Add your name.','f-email':'Add an email I can reply to.','f-msg':'Write a short message.'};
+  function check(inp){const fld=inp.closest('.field'),err=fld.querySelector('.err');if(!err)return true;
+    const bad=!inp.value.trim()||(inp.type==='email'&&!inp.checkValidity());
+    if(bad){fld.setAttribute('data-error','');err.textContent=inp.type==='email'&&inp.value.trim()?'That email looks incomplete.':msgs[inp.id];inp.setAttribute('aria-invalid','true');}
+    else{fld.removeAttribute('data-error');err.textContent='';inp.removeAttribute('aria-invalid');}return !bad;}
+  form.querySelectorAll('input[required],textarea[required]').forEach(i=>i.addEventListener('blur',()=>check(i)));
+  form.addEventListener('submit',e=>{e.preventDefault();const req=[...form.querySelectorAll('input[required],textarea[required]')];const ok=req.map(check).every(Boolean);
+    const s=document.getElementById('status');if(!ok){s.textContent='';req.find(i=>i.getAttribute('aria-invalid'))?.focus();return;}
+    s.textContent='Form not connected yet. Email me directly for now.';});
+})();
+</script>

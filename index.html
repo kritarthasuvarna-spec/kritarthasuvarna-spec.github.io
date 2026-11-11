@@ -87,10 +87,10 @@ nav a:hover,nav a[aria-current="true"]{color:var(--ink)}
 nav a:hover::after,nav a[aria-current="true"]::after{transform:none}
 .head-cta{min-height:44px;padding:0 20px;font-size:15px}
 .menu-btn{display:none;min-height:44px;min-width:44px;padding:0 14px;border:2px solid var(--ink);background:transparent;font:700 15px/1 var(--body);color:var(--ink);cursor:pointer}
-.sheet{position:fixed;inset:0;z-index:70;background:var(--navy);color:var(--paper);padding:calc(env(safe-area-inset-top,0px) + 20px) max(20px,env(safe-area-inset-right,0px)) 32px max(20px,env(safe-area-inset-left,0px));display:flex;flex-direction:column}
+.sheet{position:fixed;inset:0;z-index:70;background:var(--navy);color:var(--paper);padding:calc(env(safe-area-inset-top,0px) + 20px) max(20px,env(safe-area-inset-right,0px)) 32px max(20px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;overflow-y:auto}
 .sheet .close{align-self:flex-end;min-height:44px;padding:0 16px;border:2px solid var(--paper);background:transparent;color:var(--paper);font:700 15px/1 var(--body);cursor:pointer}
-.sheet ul{list-style:none;margin:40px 0 0;padding:0;display:grid;gap:6px}
-.sheet a{display:block;font:400 44px/1.1 var(--display);text-transform:uppercase;text-decoration:none;padding:8px 0}
+.sheet ul{list-style:none;margin:28px 0 0;padding:0;display:grid;gap:0}
+.sheet a{display:block;font:400 clamp(24px,7.5vw,40px)/1.1 var(--display);text-transform:uppercase;text-decoration:none;padding:14px 0;border-bottom:1px solid rgba(255,251,243,.12);overflow-wrap:break-word}
 .sheet a:hover{color:var(--orange)}
 @media (max-width:860px){nav,.head-cta{display:none}.menu-btn{display:inline-flex;align-items:center}}
 

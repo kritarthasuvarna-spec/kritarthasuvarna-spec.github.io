@@ -207,7 +207,7 @@ nav a:hover::after,nav a[aria-current="true"]::after{transform:none}
 .tcard.hero-tool{grid-column:1/-1;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-rows:auto;align-items:center;gap:40px;padding:40px;background:var(--navy);color:var(--paper);--c:36px;clip-path:polygon(var(--c) 0,100% 0,100% 100%,0 100%,0 var(--c))}
 .tcard.hero-tool:hover{transform:none}
 .ticon{width:56px;height:56px}
-.tname{display:flex;align-items:center;gap:12px}
+.tname{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
 .tname img{border-radius:10px;flex:0 0 auto}
 .tbtns{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
 .hero-tool .link{color:var(--paper);background:none;border:0;cursor:pointer;padding:0}
@@ -384,6 +384,21 @@ html.is-loading .loader,.loader.leaving{display:grid}
 @keyframes lbIn{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:none}}
 .lb-img.anim > *{animation:lbIn .3s ease both}
 @media (prefers-reduced-motion:reduce){.lb-img.anim > *{animation:none}}
+.tcard.hero-tool.fn{grid-template-columns:minmax(0,1fr);gap:32px}
+.fn-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:end}
+.fn-head .lead{margin:16px 0 0;max-width:60ch}
+.fn-win{border:1.5px solid rgba(255,251,243,.18);background:#16201A;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.fn-bar{display:flex;align-items:center;gap:7px;height:34px;padding:0 14px;border-bottom:1.5px solid rgba(255,251,243,.12)}
+.fn-bar i{width:10px;height:10px;border-radius:50%;background:rgba(255,251,243,.25)}
+.fn-bar i:first-child{background:var(--orange)}
+.fn-bar span{margin-left:10px;font:500 12px/1 var(--mono);color:rgba(255,251,243,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fn-win .tshot{background:#000}
+.hero-tool ul.fn-feats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0}
+.hero-tool .fn-feats li{padding:18px 18px 18px 46px;background:rgba(255,251,243,.06);display:grid;gap:6px}
+.hero-tool .fn-feats li::before{left:18px;top:22px}
+.fn-feats b{font:700 16px/1.2 var(--body)}
+.fn-feats span{font-size:14px;line-height:1.45;color:rgba(255,251,243,.75)}
+@media (max-width:900px){.fn-head{grid-template-columns:1fr;align-items:start;gap:22px}.hero-tool ul.fn-feats{grid-template-columns:1fr;gap:10px}}
 </style>
 </head>
 <body>
@@ -635,20 +650,25 @@ html.is-loading .loader,.loader.leaving{display:grid}
       <p class="lead muted">When a task annoys me twice, I build a tool for it. A Windows app on the Microsoft Store and three Figma plugins so far.</p>
     </div>
     <div class="tgrid">
-      <article class="tcard hero-tool rv">
-        <div>
-          <div class="tname"><img src="tools/footnote-icon.webp" alt="" width="44" height="44"><span class="tstat live">Live on Microsoft Store</span></div>
-          <h3 class="h2" style="margin-top:18px">FootNote</h3>
-          <p class="lead">Leave a note on any file, right inside Windows Explorer, so every saved version tells you what it is. No renaming files into paragraphs.</p>
-          <ul>
-            <li>Right-click any file or folder and choose "Add FootNote"</li>
-            <li>Reminders, clickable links and Markdown or CSV export</li>
-            <li>Notes never modify the file itself</li>
-          </ul>
+      <article class="tcard hero-tool fn rv">
+        <div class="fn-head">
+          <div>
+            <div class="tname"><img src="tools/footnote-icon.webp" alt="" width="44" height="44"><span class="tstat live">Live on Microsoft Store</span></div>
+            <h3 class="h2" style="margin-top:18px">FootNote</h3>
+            <p class="lead">Leave a note on any file, right inside Windows Explorer, so every saved version tells you what it is. No renaming files into paragraphs.</p>
+          </div>
           <div class="tbtns"><a class="btn" href="https://apps.microsoft.com/detail/9NGH976T7C78" target="_blank" rel="noopener">Get it free <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h11M9 4l4 4-4 4"/></svg></a>
           <button type="button" class="link tgal" data-gal="footnote">See screenshots</button></div>
         </div>
-        <div class="tshot"><video src="tools/footnote-demo.mp4" poster="tools/footnote-demo.jpg" muted loop playsinline autoplay aria-label="FootNote demo: adding a note to a file in Explorer"></video></div>
+        <div class="fn-win">
+          <div class="fn-bar" aria-hidden="true"><i></i><i></i><i></i><span>FootNote &middot; Windows Explorer</span></div>
+          <div class="tshot"><video src="tools/footnote-demo.mp4" poster="tools/footnote-demo.jpg" muted loop playsinline autoplay preload="metadata" aria-label="FootNote demo: adding a note to a file in Windows Explorer"></video></div>
+        </div>
+        <ul class="fn-feats">
+          <li><b>Right-click to note</b><span>Choose "Add FootNote" on any file or folder.</span></li>
+          <li><b>Reminders and links</b><span>Clickable links, reminders, Markdown or CSV export.</span></li>
+          <li><b>File stays untouched</b><span>Notes live beside the file and never modify it.</span></li>
+        </ul>
       </article>
       <article class="tcard tplug rv" data-gal="reslot" data-title="Reslot" data-sub="Figma plugin" data-images="tools/reslot-cover.webp|tools/reslot-1.webp|tools/reslot-2.webp|tools/reslot-3.webp" data-captions="Cover|Swap states|Blocked state|Features">
         <button type="button" class="tcover" aria-label="View Reslot images"><img src="tools/reslot-cover.webp" alt="Reslot cover art" loading="lazy"><span class="view">View images</span></button>
@@ -679,6 +699,7 @@ html.is-loading .loader,.loader.leaving{display:grid}
     <span class="label">Devlog</span>
     <h2 id="h-log" class="h2 rv">On the desk</h2>
     <div class="posts">
+      <article class="post rv"><div class="row"><span class="chip">Update</span><time datetime="2026-11">Nov 2026</time></div><h3 class="h3">New FootNote demo</h3><p>Real walkthrough of adding a note in Explorer.</p></article>
       <article class="post rv"><div class="row"><span class="chip">New</span><time datetime="2026-11">Nov 2026</time></div><h3 class="h3">Stylized bow</h3><p>Low-poly recurve bow, hand-painted. Added to props.</p></article>
       <article class="post rv"><div class="row"><span class="chip">WIP</span><time datetime="2026-11">Nov 2026</time></div><h3 class="h3">Bomb prop, last of the set</h3><p>Fuse and skull mark blocked out. Painting next.</p></article>
       <article class="post rv"><div class="row"><span class="chip">Breakdown</span><time datetime="2026-10">Oct 2026</time></div><h3 class="h3">Six props on one palette</h3><p>Hatchet, potion, staff, dagger, chest and shield.</p></article>

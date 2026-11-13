@@ -402,6 +402,12 @@ html.is-loading .loader,.loader.leaving{display:grid}
 </style>
 </head>
 <body>
+<script>
+/* Always start at the top on load/refresh; section links never write #hash to the URL */
+if('scrollRestoration' in history)history.scrollRestoration='manual';
+if(location.hash)history.replaceState(null,'',location.pathname+location.search);
+window.scrollTo(0,0);
+</script>
 
 <script>document.documentElement.classList.add('is-loading');</script>
 <div class="loader" id="loader" role="status" aria-live="polite" aria-label="Loading">
@@ -932,6 +938,15 @@ html.is-loading .loader,.loader.leaving{display:grid}
     setTimeout(()=>s.textContent='Copy email',2200);});
 
 })();
+</script>
+<script>
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a[href^="#"]');if(!a||e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey)return;
+  e.preventDefault();const id=a.getAttribute('href').slice(1),t=id&&id!=='top'?document.getElementById(id):null;
+  const b=matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+  t?t.scrollIntoView({behavior:b,block:'start'}):window.scrollTo({top:0,behavior:b});
+});
+window.addEventListener('pageshow',e=>{if(e.persisted)return;window.scrollTo(0,0);});
 </script>
 </body>
 </html>

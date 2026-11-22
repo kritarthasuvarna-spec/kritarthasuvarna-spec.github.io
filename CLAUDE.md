@@ -56,7 +56,7 @@ When Viskit says "add/upload/update X":
 - Current order:
   - Characters: Bob (f), Frog, Spitter, Brute, Rock Golem.
   - Environments: Backrooms (f), Night Gas Station (Sex Education ref), The Desk, Rain at the Rex, Vena, Stylized Flooded Train (f), Lighthouse, Moonlit Temple (f), Vecna House.
-  - Stylized props: Hatchet (f), Potion Bottle, Stylized Bow, Circus Props (f), Stylized Vehicles, Mage Staff, Dagger, Round Shield, Low-poly Weapon Set, Stylized Bomb.
+  - Stylized props: Hatchet (f), Stylized Bomb, Potion Bottle, Stylized Bow, Stylized Vehicles, Circus Props (f), Mage Staff, Dagger, Round Shield, Low-poly Weapon Set.
   - Hard surface & products: Qrill, Gravity Drinking Water, …
 
 ## Design system (keep it)
